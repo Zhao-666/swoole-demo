@@ -53,6 +53,11 @@ class Ws
     public function onOpen($server, $request)
     {
         var_dump($request->fd);
+        if ($request->fd == 1) {
+            swoole_timer_tick(2000, function ($timerId) {
+                echo '2s: timerId ' . $timerId . "\n";
+            });
+        }
     }
 
     /**
@@ -63,11 +68,15 @@ class Ws
     public function onMessage($server, $frame)
     {
         echo 'ser-push-message:' . $frame->data . "\n";
-        $data = [
-            'task' => 1,
-            'fd' => $frame->fd
-        ];
-        $server->task($data);
+//        $data = [
+//            'task' => 1,
+//            'fd' => $frame->fd
+//        ];
+//        $server->task($data);
+        swoole_timer_after(5000, function () use ($server, $frame) {
+            echo "5s-after\n";
+            $server->push($frame->fd, "server-timer-after:");
+        });
         $server->push($frame->fd, 'server-push:' . date('Y-m-d H:i:s'));
     }
 
