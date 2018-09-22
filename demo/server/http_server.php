@@ -9,6 +9,7 @@
 $http = new swoole_http_server('0.0.0.0', 8811);
 
 $http->set([
+    'worker_num' => 8,//worker进程数 cpu 1-4倍
     'enable_static_handler' => true,
     'document_root' => '/mnt/htdocs/swoole-demo/data',
 ]);
